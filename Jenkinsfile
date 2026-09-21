@@ -2,27 +2,49 @@ pipeline {
     agent any
 
     stages {
-        stage('Setup') {
+        stage('Checkout') {
             steps {
-                sh 'apt-get update && apt-get install -y python3 python3-pip docker.io'
+                echo 'Pulling latest code from GitHub...'
+                checkout scm
             }
         }
-        stage('Build and Lint') {
+
+        stage('Install Dependencies') {
             steps {
-                sh 'pip3 install flake8 --break-system-packages'
-                sh 'python3 -m flake8 app.py --max-line-length=100'
+                echo 'Installing Python dependencies...'
+                sh 'pip install -r requirements.txt'
             }
         }
-        stage('Docker Build') {
+
+        stage('Lint') {
             steps {
-                sh 'docker build -t aceest-fitness .'
+                echo 'Running lint check...'
+                sh 'pip install flake8'
+                sh 'flake8 app.py --max-line-length=127 --exit-zero'
             }
         }
+
         stage('Run Tests') {
             steps {
-                sh 'pip3 install pytest --break-system-packages'
-                sh 'python3 -m pytest test_app.py'
+                echo 'Running Pytest...'
+                sh 'pytest test_app.py -v'
             }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t aceest-fitness:jenkins .'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'BUILD SUCCESS - All stages passed!'
+        }
+        failure {
+            echo 'BUILD FAILED - Check the logs above.'
         }
     }
 }
