@@ -112,5 +112,11 @@ def get_diet(program_id):
         return jsonify({"error": "Program not found"}), 404
     return jsonify(PROGRAMS[program_id]["diet"])
 
+@app.route("/programs/<program_id>/workout")
+def get_workout(program_id):
+    if program_id not in PROGRAMS:
+        return jsonify({"error": "Program not found"}), 404
+    return jsonify({"workout": PROGRAMS[program_id]["workout"]})
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
