@@ -1,70 +1,47 @@
-# ACEest Fitness & Gym — CI/CD Pipeline
+# ACEest Fitness & Gym
 
-![GitHub Actions](https://github.com/2025tm93078/aceest-fitness-cicd/actions/workflows/main.yml/badge.svg)
+## What is this project
+This is a Flask web app for ACEest Fitness and Gym. It has API endpoints for fitness programs, diet plans, workouts and calorie calculation. I also set up a full CI/CD pipeline using GitHub Actions and Jenkins.
 
-## Project Overview
-ACEest Fitness & Gym is a Flask-based REST API that serves fitness programs, diet plans, workout schedules, and calorie calculations. This project demonstrates a complete DevOps pipeline including version control, containerization, automated testing, and CI/CD automation.
-
-## Tech Stack
-- **Backend:** Python, Flask
-- **Testing:** Pytest
-- **Containerization:** Docker
-- **CI/CD:** GitHub Actions, Jenkins
-- **Version Control:** Git/GitHub
-
-## Local Setup
+## How to run locally
 ```bash
 git clone https://github.com/2025tm93078/aceest-fitness-cicd.git
 cd aceest-fitness-cicd
 pip install -r requirements.txt
 python app.py
 ```
-Visit http://localhost:5000
+Open http://localhost:5000 in browser
 
 ## API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | / | Health check |
-| GET | /programs | List all fitness programs |
-| GET | /programs/<id> | Get specific program details |
-| GET | /programs/<id>/diet | Get diet plan for a program |
-| GET | /programs/<id>/workout | Get workout plan for a program |
-| POST | /calories | Calculate daily calorie target |
-| GET | /metrics | Gym capacity and metrics |
+- GET / — checks if app is running
+- GET /programs — shows all fitness programs
+- GET /programs/<id> — shows one program
+- GET /programs/<id>/diet — shows diet plan
+- GET /programs/<id>/workout — shows workout plan
+- POST /calories — calculates daily calories based on weight
+- GET /metrics — shows gym details
 
-## Running Tests Manually
+## Running tests
 ```bash
 pytest test_app.py -v
 ```
-Currently 18 tests covering all endpoints.
+18 tests, all passing.
 
 ## Docker
 ```bash
 docker build -t aceest-fitness .
 docker run -p 5000:5000 aceest-fitness
 ```
-Uses `python:3.10-slim` for optimized image size.
 
-![Docker Build](screenshots/docker.png)
+![Docker](screenshots/docker.png)
 
-## GitHub Actions Pipeline
-Triggers automatically on every push and pull request to main branch.
-
-**Stages:**
-1. **Build and Lint** — installs dependencies, checks syntax with flake8
-2. **Docker Build** — builds and verifies the Docker image
-3. **Run Pytest** — runs all 18 tests inside the container
+## GitHub Actions
+Pipeline runs automatically on every push to main. It does 3 things - lint check, docker build, and runs all tests.
 
 ![GitHub Actions](screenshots/github-actions.png)
 
-## Jenkins Pipeline
-Jenkins pulls the latest code from GitHub and runs a clean build.
-
-**Stages:**
-1. **Checkout** — clones the repository from GitHub
-2. **Install Dependencies** — installs all Python packages
-3. **Lint** — runs flake8 for code quality check
-4. **Run Tests** — executes all 18 pytest cases
+## Jenkins
+Jenkins pulls code from GitHub and runs the build. Stages are checkout, install, lint and test.
 
 ![Jenkins 1](screenshots/jenkins1.png)
 ![Jenkins 2](screenshots/jenkins2.png)
