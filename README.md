@@ -29,12 +29,14 @@ pytest test_app.py -v
 docker build -t aceest-fitness .
 docker run -p 5000:5000 aceest-fitness
 ```
+![Docker Build](screenshots/docker.png)
 
 ## GitHub Actions Pipeline
 Triggers on every push to main branch:
 1. Build and Lint — checks code with flake8
 2. Docker Build — builds the container
 3. Run Pytest — runs all 14 tests
+![GitHub Actions](screenshots/github-actions.png)
 
 ## Jenkins Pipeline
 Jenkins pulls from GitHub and runs:
@@ -42,3 +44,6 @@ Jenkins pulls from GitHub and runs:
 2. Install Dependencies — pip install
 3. Lint — flake8 check
 4. Run Tests — pytest (14 tests passing)
+![Jenkins 1](screenshots/jenkins1.png)
+![Jenkins 2](screenshots/jenkins2.png)
+![Jenkins 3](screenshots/jenkins3.png)
