@@ -1,45 +1,36 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/2025tm93078/aceest-fitness-cicd.git'
-            }
-        }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
 
+    stages {
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt --break-system-packages'
+                sh 'python3 -m venv venv'
+                sh '. venv/bin/activate && pip install -r requirements.txt flake8 pytest'
             }
         }
-
         stage('Lint') {
             steps {
-                sh 'pip install flake8 --break-system-packages'
-                sh 'flake8 app.py --max-line-length=127 --exit-zero'
+                sh '. venv/bin/activate && flake8 app.py --max-line-length=127 --exit-zero'
             }
         }
-
-        stage('Run Tests') {
+        stage('Unit Tests') {
             steps {
-                sh 'pytest test_app.py -v'
+                sh '. venv/bin/activate && pytest test_app.py -v'
             }
         }
-
         stage('Docker Build') {
             steps {
-                sh 'docker build -t aceest-fitness:jenkins .'
+                sh 'docker build -t aceest-fitness:${BUILD_NUMBER} .'
             }
         }
     }
 
     post {
-        success {
-            echo 'BUILD SUCCESS - All stages passed!'
-        }
-        failure {
-            echo 'BUILD FAILED - Check the logs above.'
-        }
+        success { echo 'BUILD SUCCESS' }
+        failure { echo 'BUILD FAILED' }
     }
 }
