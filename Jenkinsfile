@@ -5,6 +5,11 @@ pipeline {
         pollSCM('H/2 * * * *')
     }
 
+    environment {
+        SONAR_HOST = 'http://sonarqube:9000'
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+
     stages {
         stage('Install Dependencies') {
             steps {
@@ -20,6 +25,17 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 sh '. venv/bin/activate && pytest test_app.py -v'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                sh '''
+                    docker run --rm --network devops-net \
+                      -e SONAR_HOST_URL=$SONAR_HOST \
+                      -e SONAR_TOKEN=$SONAR_TOKEN \
+                      -v "$WORKSPACE":/usr/src \
+                      sonarsource/sonar-scanner-cli
+                '''
             }
         }
         stage('Docker Build') {
