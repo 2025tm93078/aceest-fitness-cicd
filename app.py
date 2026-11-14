@@ -1,6 +1,15 @@
 from flask import Flask, jsonify, request
 
+import os
+
 app = Flask(__name__)
+APP_VERSION = os.environ.get('APP_VERSION', 'dev')
+
+
+@app.route('/version')
+def version():
+    return jsonify({'version': APP_VERSION})
+
 
 PROGRAMS = {
     "fat_loss": {
@@ -119,4 +128,5 @@ def get_workout(program_id):
     return jsonify({"workout": PROGRAMS[program_id]["workout"]})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
+
