@@ -46,3 +46,22 @@ Jenkins pulls code from GitHub and runs the build. Stages are checkout, install,
 ![Jenkins 1](screenshots/jenkins1.png)
 ![Jenkins 2](screenshots/jenkins2.png)
 ![Jenkins 3](screenshots/jenkins3.png)
+## Assignment 2: CI/CD, Docker Hub and Kubernetes
+
+**Docker Hub:** https://hub.docker.com/r/rohitvardhanbattula/aceest-fitness (tags: v1.0, v2.0, v3.0, latest, build numbers)
+
+**Pipeline (Jenkinsfile):** SCM polling, install, flake8 lint, pytest, SonarQube analysis, Docker build, tests inside the container, push to Docker Hub.
+
+**Kubernetes manifests (`k8s/`), run on Minikube:**
+
+| Strategy | File | How it works |
+|---|---|---|
+| Rolling update + rollback | rolling.yaml | v1.0 to v2.0 with maxUnavailable 0, `kubectl rollout undo` |
+| Blue-Green | bluegreen.yaml | Service selector switches blue (v1.0) to green (v2.0) |
+| Canary | canary.yaml | 3 stable (v1.0) and 1 canary (v2.0) pods behind one Service |
+| Shadow | shadow.yaml | nginx mirrors traffic to v2.0, users only see v1.0 |
+| A/B testing | abtest.yaml | Header `X-Group: B` routes to v2.0 |
+
+**Version history:** `versions/` holds the original ACEest Tkinter versions (1.0 to 3.2.4). Git tags v1.0, v2.0 and v3.0 mark the releases.
+
+**Endpoints (Minikube NodePorts):** rolling 30001, blue-green 30002, canary 30003, shadow 30004, A/B 30005. Access with `minikube service <name> --url`.
