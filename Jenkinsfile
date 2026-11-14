@@ -8,6 +8,7 @@ pipeline {
     environment {
         SONAR_HOST = 'http://sonarqube:9000'
         SONAR_TOKEN = credentials('sonar-token')
+        IMAGE = 'rohitvardhanbattula/aceest-fitness'
     }
 
     stages {
@@ -40,7 +41,21 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t aceest-fitness:${BUILD_NUMBER} .'
+                sh 'docker build -t $IMAGE:${BUILD_NUMBER} -t $IMAGE:latest .'
+            }
+        }
+        stage('Test Inside Container') {
+            steps {
+                sh 'docker run --rm $IMAGE:${BUILD_NUMBER} python -m pytest test_app.py -q'
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+                    sh 'echo $DH_PASS | docker login -u $DH_USER --password-stdin'
+                    sh 'docker push $IMAGE:${BUILD_NUMBER}'
+                    sh 'docker push $IMAGE:latest'
+                }
             }
         }
     }
@@ -50,4 +65,3 @@ pipeline {
         failure { echo 'BUILD FAILED' }
     }
 }
-
