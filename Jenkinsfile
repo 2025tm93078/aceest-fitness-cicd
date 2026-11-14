@@ -33,7 +33,7 @@ pipeline {
                     docker run --rm --network devops-net \
                       -e SONAR_HOST_URL=$SONAR_HOST \
                       -e SONAR_TOKEN=$SONAR_TOKEN \
-                      -v "$WORKSPACE":/usr/src \
+                      --volumes-from jenkins -w "$WORKSPACE" \
                       sonarsource/sonar-scanner-cli
                 '''
             }
@@ -50,3 +50,4 @@ pipeline {
         failure { echo 'BUILD FAILED' }
     }
 }
+
